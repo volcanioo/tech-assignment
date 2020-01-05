@@ -9,6 +9,7 @@
       :class="{'active': step === 1}">
       <input
         type="text"
+        :ref='"usernameSearch"'
         v-model="usernameSearch"
         placeholder="Type a github username.. (e.g. github)"
         @keypress.enter="getRepos"
@@ -74,8 +75,11 @@
     </section>
     <section
       class="repositories--chart"
-      :class="{'active': step !== 1, 'fill': step === 2}">
-      <Chart :chartData="datacollection" :options="chartOptions"></Chart>
+      :class="{'active': step !== 1, 'fill': step === 2}"
+      v-if="errorType === null">
+      <Chart
+        :chartData="datacollection"
+        :options="chartOptions" />
       <article class="repositories--chart--placeholder" v-if="step !== 3">
         <h2>User found.</h2>
         <p>Select a repository to load data</p>
@@ -154,6 +158,7 @@ export default {
       this.repos = [];
       this.usernameSearch = '';
       this.selectedRepostory = null;
+      this.$refs.usernameSearch.focus();
       this.datacollection = {
         labels: [],
         datasets: [
