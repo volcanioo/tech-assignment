@@ -24,6 +24,8 @@
     }
 }
 body {
+    margin: 0;
+    padding: 0;
     background: #5c3ebd;
 }
 .icon {
@@ -55,7 +57,7 @@ h2 {
         line-height: 32px;
     }
     @include breakpoint(xs) {
-        font-size: 20px;
+        font-size: 18px;
         line-height: 28px;
         font-weight: 900;
     }
@@ -174,7 +176,7 @@ p {
     }
     @include breakpoint(sm) {
         margin: 20px auto 0 auto;
-        max-width: 80%;
+        max-width: 85%;
     }
     @include breakpoint(xs) {
         margin: 20px auto 0 auto;
