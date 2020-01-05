@@ -1,7 +1,34 @@
+@mixin breakpoint($class) {
+    @if $class==xs {
+        @media (max-width: 578px) {
+            @content;
+        }
+    } @else if $class==sm {
+        @media (max-width: 768px) {
+            @content;
+        }
+    } @else if $class==md {
+        @media (max-width: 992px) {
+            @content;
+        }
+    } @else if $class==lg {
+        @media (max-width: 1200px) {
+            @content;
+        }
+    }  @else if $class==xl {
+        @media (max-width: 1640px) {
+            @content;
+        }
+    } @else {
+        @warn "Breakpoint mixin supports: xs, sm, md, lg, xl, xxl";
+    }
+}
 body {
     background: #5c3ebd;
 }
 * {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
     outline: none;
     box-sizing: border-box;
 }
@@ -17,10 +44,35 @@ h2{
     font-weight: 700;
     color: #ffd011;
     margin: 0;
+    @include breakpoint(md) {
+        font-size: 36px;
+        line-height: 42px;
+    }
+    @include breakpoint(sm) {
+        font-size: 26px;
+        line-height: 32px;
+    }
+    @include breakpoint(xs) {
+        font-size: 20px;
+        line-height: 28px;
+        font-weight: 900;
+    }
 }
 h2 {
     font-size: 36px;
     line-height: 42px;
+    @include breakpoint(md) {
+        font-size: 26px;
+        line-height: 32px;
+    }
+    @include breakpoint(sm) {
+        font-size: 18px;
+        line-height: 24px;
+    }
+    @include breakpoint(xs) {
+        font-size: 16px;
+        line-height: 20px;
+    }
 }
 p {
     font-size: 26px;
@@ -29,6 +81,22 @@ p {
     color: #fff;
     opacity: .7;
     margin: 0px 0 30px 0;
+    @include breakpoint(md) {
+        font-size: 18px;
+        margin-bottom: 20px;
+        line-height: 22px;
+    }
+    @include breakpoint(sm) {
+        font-size: 16px;
+        margin-bottom: 15px;
+        line-height: 20px;
+    }
+    @include breakpoint(xs) {
+        font-size: 14px;
+        line-height: 18px;
+        font-weight: 500;
+        opacity: 1;
+    }
 }
 
 // Common
@@ -43,6 +111,19 @@ p {
     color: white;
     font-family: inherit;
     line-height: 60px;
+    @include breakpoint(md) {
+        font-size: 14px;
+        height: 50px;
+        line-height: 50px;
+    }
+    @include breakpoint(sm) {
+        font-size: 12px;
+        height: 40px;
+        line-height: 40px;
+    }
+    @include breakpoint(xs) {
+        padding: 0 10px;
+    }
 
     &::placeholder {
         color: #fff;
@@ -60,6 +141,12 @@ p {
         opacity: 1;
         transform: scale(1) translateY(-50%);
     }
+    @include breakpoint(xs) {
+        left: auto;
+        transform: translateY(0%) !important;
+        top: 7px;
+        right: 7px;
+    }
 }
 
 // Repos Part
@@ -68,6 +155,18 @@ p {
     margin: 100px auto 0 auto;
     display: flex;
     flex-direction: column;
+    @include breakpoint(md) {
+        margin: 50px auto 0 auto;
+        max-width: 768px;
+    }
+    @include breakpoint(sm) {
+        margin: 20px auto 0 auto;
+        max-width: 80%;
+    }
+    @include breakpoint(xs) {
+        margin: 20px auto 0 auto;
+        max-width: 95%;
+    }
     .back-button {
         margin-bottom: 10px;
         display: flex;
@@ -81,6 +180,15 @@ p {
         cursor: pointer;
         span {
             margin-left: 10px;
+        }
+        @include breakpoint(md) {
+            font-size: 12px;
+        }
+        img {
+            @include breakpoint(md) {
+                width: 15px;
+                height: 15px;
+            }
         }
     }
     &--username {
@@ -112,13 +220,35 @@ p {
             min-height: 28px;
             border-radius: 3px;
             opacity: .7;
+            white-space: nowrap;
             cursor: pointer;
+            @include breakpoint(md) {
+                font-size: 12px;
+            }
+            @include breakpoint(sm) {
+                right: 10px;
+                min-height: 20px;
+                font-size: 12px;
+            }
+            @include breakpoint(xs) {
+                position: static;
+                transform: none;
+                margin: 10px auto;
+            }
             span {
                 margin-right: 10px;
             }
             img {
                 width: 20px;
                 height: 20px;
+                @include breakpoint(md) {
+                    width: 15px;
+                    height: 15px;
+                }
+                @include breakpoint(sm) {
+                    width: 12px;
+                    height: 12px;
+                }
             }
         }
     }
@@ -128,6 +258,11 @@ p {
             bottom: 12px;
             top: auto;
             transform: none;
+            @include breakpoint(xs) {
+                z-index: 999;
+                background: #3b277d;
+                bottom: 2.5px;
+            }
         }
     }
     &--chart {
@@ -135,6 +270,7 @@ p {
         opacity: 0;
         background: rgba(255, 255, 255, 0);
         transition: all .5s;
+        position: relative;
         &.active {
             margin-top: 10px;
             background: white;
@@ -200,6 +336,23 @@ p {
                 transform: translateY(-50%) rotate(180deg);
             }
         }
+        @include breakpoint(xs) {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .multiselect__input {
+            @include breakpoint(xs) {
+                font-size: 16px;
+                height: 50px;
+                line-height: 50px;
+            }
+        }
+    }
+    .multiselect__input {
+        border-radius: 0;
     }
     .multiselect__tags {
         &:after {
@@ -234,6 +387,10 @@ p {
             overflow: scroll;
             position: absolute;
             width: 100%;
+            @include breakpoint(xs) {
+                height: 100%;
+                max-height: 100% !important;
+            }
         }
         .multiselect__element, li {
             font-size: 16px;
@@ -265,5 +422,8 @@ p {
         h1, p, h2 {
             color: #ffcd00;
         }
+    }
+    @include breakpoint(xs) {
+        text-align: center;
     }
 }

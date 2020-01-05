@@ -5,13 +5,14 @@
       <p>The Graph of repositories helps who want to see a graph of repositories. Just enter your Github username and select a repository.</p>
     </article>
 
-    <form
+    <section
       class="repositories--username"
       :class="{'active': step === 1}">
       <input
         type="text"
         v-model="usernameSearch"
         placeholder="Type a github username.. (e.g. github)"
+        @keypress.enter="getRepos"
         class="repositories--username__input">
       <button
         v-on:click="getRepos"
@@ -24,9 +25,9 @@
         height="25"
         duration="0.2s"
         :class="{active: isReposGetting}"/>
-    </form>
+    </section>
 
-    <form
+    <section
       class="repositories--selectbox"
       :class="{'active': step >= 2}">
       <button
@@ -39,7 +40,7 @@
         label="name"
         v-model="selectedRepostory"
         :options="repos"
-        :placeholder="`Select a repository from ${usernameSearch}'s profile to see the chart of contributors`"
+        :placeholder="`Select a repository from ${usernameSearch}'s profile`"
         :searchable="true"
         @input="getRepoStats">
       </multiselect>
@@ -48,7 +49,7 @@
         height="25"
         duration="0.2s"
         :class="{active: isChartDataRendering}"/>
-    </form>
+    </section>
 
 
     <section class="error" v-if=" errorType !== null " :class="{'warning': errorType === 'empty-profile'}">
@@ -66,7 +67,7 @@
 
     </section>
 
-    <div
+    <section
       class="repositories--chart"
       :class="{'active': step !== 1, 'fill': step === 2}">
       <Chart :chartData="datacollection" :options="chartOptions"></Chart>
@@ -74,7 +75,7 @@
         <h2>No Data</h2>
         <p>Select a repo</p>
       </article>
-    </div>
+    </section>
 
   </div>
 </template>
@@ -142,7 +143,7 @@ export default {
     }
   },
   methods: {
-    stepReset: function () {
+    stepReset() {
       this.step = 1;
       this.repos = [];
       this.usernameSearch = '';
@@ -158,7 +159,7 @@ export default {
         ]
       };
     },
-    getRepos: function() {
+    getRepos() {
       this.errorType = null;
       this.virtualName = null;
       this.isReposGetting = true;
@@ -168,9 +169,9 @@ export default {
           this.isReposGetting = false;
           if (response.data.length > 0) {
             this.repos = response.data;
-            console.log(response.data);
             this.virtualName = response.data.fullName;
             this.step = 2;
+            document.activeElement.blur();
           } else {
             this.errorType = 'empty-profile';
             this.virtualName = this.usernameSearch;
@@ -181,7 +182,7 @@ export default {
           this.virtualName = this.usernameSearch;
         })
     },
-    getRepoStats: function (value) {
+    getRepoStats(value) {
       this.errorType = null;
       this.virtualName = '';
       this.isChartDataRendering = true;
