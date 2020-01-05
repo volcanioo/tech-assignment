@@ -164,6 +164,7 @@ p {
 // Repos Part
 .repositories {
     max-width: 1200px;
+    width: 80%;
     margin: 100px auto 0 auto;
     display: flex;
     flex-direction: column;
@@ -288,7 +289,9 @@ p {
             background: white;
             padding: 30px;
             opacity: 1;
-
+            @include breakpoint(xs) {
+                padding: 10px;
+            }
         }
         &.fill {
             opacity: 1;
