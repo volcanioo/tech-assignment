@@ -1,4 +1,5 @@
 # tech-assignment
+If you want to learn How I do it? You can click [here.](#development-process)
 
 ## Project setup
 ```
