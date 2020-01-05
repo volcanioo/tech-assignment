@@ -40,6 +40,7 @@
         :options="repos"
         :placeholder="`Select a repository from ${usernameSearch}'s profile`"
         :searchable="true"
+        :hideSelected="true"
         @input="getRepoStats">
       </multiselect>
       <Loading
@@ -51,18 +52,24 @@
     <section
       class="error"
       v-if="errorType !== null "
-      :class="{'warning': errorType === 'empty-profile'}">
+      :class="{'warning': errorType === 'empty-profile', 'warning': errorType === 'no-data'}">
 
       <h2>Ooops! We have a problem.</h2>
 
       <!-- If profile is empty -->
-      <p v-if=" errorType === 'empty-profile' ">{{virtualName}} doesn't share a repository still.</p>
+      <p v-if="errorType === 'empty-profile' ">{{virtualName}} doesn't share a repository still.</p>
 
       <!-- If username don't exits -->
-      <p v-if=" errorType === 'exits' ">Github doesn't have a user like '{{virtualName}}'</p>
+      <p v-if="errorType === 'exits' ">Github doesn't have a user like '{{virtualName}}'</p>
 
       <!-- Chart Error -->
-      <p v-if=" errorType === 'github-server' ">We can't get dataset from github Server. Can you try again later?</p>
+      <p v-if="errorType === 'github-server' ">We can't get dataset from github Server. Can you try again later?</p>
+
+      <!-- Username Empty -->
+      <p v-if="errorType === 'username-required' ">Please enter your github username.</p>
+
+      <!-- No Data -->
+      <p v-if="errorType === 'no-data' ">There is doesn't have any data from server.</p>
 
     </section>
     <section
@@ -70,8 +77,8 @@
       :class="{'active': step !== 1, 'fill': step === 2}">
       <Chart :chartData="datacollection" :options="chartOptions"></Chart>
       <article class="repositories--chart--placeholder" v-if="step !== 3">
-        <h2>No Data</h2>
-        <p>Select a repo</p>
+        <h2>User found.</h2>
+        <p>Select a repository to load data</p>
       </article>
     </section>
   </div>
@@ -143,6 +150,7 @@ export default {
     // Step reset generally works on back buttons and doesn't want a variable for that.
     stepReset() {
       this.step = 1;
+      this.errorType = null;
       this.repos = [];
       this.usernameSearch = '';
       this.selectedRepostory = null;
@@ -158,8 +166,16 @@ export default {
       };
     },
 
-    // getRepos doesn't want a variable
+    /*
+    * username: get a string variable from the data() variables (this.usernameSearch)
+    * */
     getRepos() {
+      // Check to Username by the user
+      if (this.usernameSearch === null || this.usernameSearch === "") {
+        this.errorType = 'username-required';
+        return false;
+      }
+
       // Error Controls and Virtual Name Refreshing
       this.errorType = null;
       this.virtualName = null;
@@ -182,11 +198,11 @@ export default {
             this.virtualName = this.usernameSearch;
           }
         }).catch(() => {
-          // Error Handler
-          this.isReposGetting = false;
-          this.errorType = 'exits';
-          this.virtualName = this.usernameSearch;
-        })
+        // Error Handler
+        this.isReposGetting = false;
+        this.errorType = 'exits';
+        this.virtualName = this.usernameSearch;
+      })
     },
 
     /*
@@ -194,6 +210,12 @@ export default {
     * username: get a string variable from the data() variables (this.usernameSearch)
     * */
     getRepoStats(value) {
+      // Check to Value of Selected Element
+      if (!value || value.name === null || value.name === "") {
+        this.errorType = 'github-server';
+        return false;
+      }
+
       // Error Controls, Loading Inticator, and Virtual Name Refreshing
       this.errorType = null;
       this.virtualName = '';
@@ -217,6 +239,11 @@ export default {
             ]
           }
           // Data updating from the api
+          if (response.data.length === 0) {
+            this.isChartDataRendering = false;
+            this.errorType = 'no-data';
+            this.virtualName = this.usernameSearch;
+          }
           for (let i = 0; i < response.data.length; i++) {
             this.datacollection.labels.push(response.data[i].login.toString());
             this.datacollection.datasets[0].data.push(response.data[i].contributions);

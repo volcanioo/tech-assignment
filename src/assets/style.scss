@@ -127,6 +127,16 @@ p {
         padding: 0 10px;
     }
 
+    &::-webkit-input-placeholder {
+        color: #fff;
+        opacity: 1;
+    }
+
+    &:-ms-input-placeholder {
+        color: #fff;
+        opacity: 1;
+    }
+
     &::placeholder {
         color: #fff;
         opacity: 1;
@@ -218,7 +228,6 @@ p {
             right: 20px;
             color: white;
             font-size: 14px;
-            line-height: 1;
             min-height: 28px;
             border-radius: 3px;
             opacity: .7;
@@ -292,6 +301,7 @@ p {
         &--placeholder {
             position: absolute;
             font-size: 55px;
+            pointer-events: none;
             top: 0;
             width: 100%;
             padding-top: 65px;
@@ -302,6 +312,12 @@ p {
             flex-direction: column;
             margin: -30px;
             text-align: center;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
             h2, p {
                 color: white !important;
             }
