@@ -43,6 +43,14 @@ Actually, I felt uncomfortable while creating this app. Because I had 2 elements
 ## Implementation Process
 When I created the first template, I just created 2 components for the app. Actually, When I started I didn't want to use a router or views. Because I had just 1 page for the app. I could use `App.vue` for implementation. But I created a router and views structure for sustainability. When a developer wants to add detail for anything can create their own templates.
 
+### Dependencies
+* [Axios](https://github.com/axios/axios): I used Axios for exceeding to Allow-Cross origin problem and doing server requests in an easier way.
+* [Vue Multiselect](https://vue-multiselect.js.org/): I used for Multiselect for creating a typehead dropdown in an easier way. I chose that thing because Multiselect gives a custom template for dropdowns, In that way, developers can create their templates. Same time, Multiselect has so many properties for a dropdown. You can discover new things for UX from Multiselect and you can implement. 
+* [VueChartJS](https://vue-chartjs.org/): I am using vue-awesome repo when I want to create hot solutions on Vue. I checked the Chart Plugins list on the vue-awesome and I found VueChartJS. I checked to VueChartJS issues, commits, and stars after that, I added to my app.
+
+### Loading and Placeholders
+I created a component for the loading indicator. I am using this component when the user searches anything. I was should fill the screen for UX and I had an empty chart when the user searches anything. I changed chart styles when it's empty. In that way, when the user selects a repository from typehead dropdown I changed CSS and showing with filled data.
+
 ### Error Handling
 I am using `then` and `catch` functions for that. If the server lives any problem, I can show a message for the user.
 
