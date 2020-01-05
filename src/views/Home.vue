@@ -70,7 +70,7 @@
       class="repositories--chart"
       :class="{'active': step !== 1, 'fill': step === 2}">
       <Chart :chartData="datacollection" :options="chartOptions"></Chart>
-      <article class="repositories--chart--placeholder">
+      <article class="repositories--chart--placeholder" v-if="step !== 3">
         <h2>No Data</h2>
         <p>Select a repo</p>
       </article>
