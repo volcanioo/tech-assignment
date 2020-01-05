@@ -4,7 +4,6 @@
       <h1>Welcome to Graph of repositories</h1>
       <p>The Graph of repositories helps who want to see a graph of repositories. Just enter your Github username and select a repository.</p>
     </article>
-
     <section
       class="repositories--username"
       :class="{'active': step === 1}">
@@ -26,7 +25,6 @@
         duration="0.2s"
         :class="{active: isReposGetting}"/>
     </section>
-
     <section
       class="repositories--selectbox"
       :class="{'active': step >= 2}">
@@ -50,9 +48,10 @@
         duration="0.2s"
         :class="{active: isChartDataRendering}"/>
     </section>
-
-
-    <section class="error" v-if="errorType !== null " :class="{'warning': errorType === 'empty-profile'}">
+    <section
+      class="error"
+      v-if="errorType !== null "
+      :class="{'warning': errorType === 'empty-profile'}">
 
       <h2>Ooops! We have a problem.</h2>
 
@@ -66,7 +65,6 @@
       <p v-if=" errorType === 'github-server' ">We can't get dataset from github Server. Can you try again later?</p>
 
     </section>
-
     <section
       class="repositories--chart"
       :class="{'active': step !== 1, 'fill': step === 2}">
@@ -76,7 +74,6 @@
         <p>Select a repo</p>
       </article>
     </section>
-
   </div>
 </template>
 
@@ -143,6 +140,7 @@ export default {
     }
   },
   methods: {
+    // Step reset generally works on back buttons and doesn't want a variable for that.
     stepReset() {
       this.step = 1;
       this.repos = [];
@@ -159,37 +157,54 @@ export default {
         ]
       };
     },
+
+    // getRepos doesn't want a variable
     getRepos() {
+      // Error Controls and Virtual Name Refreshing
       this.errorType = null;
       this.virtualName = null;
       this.isReposGetting = true;
+
+      // Server Request
       axios
         .get(`https://api.github.com/users/${this.usernameSearch}/repos`)
         .then(response => {
+          // Loading indicator closing
           this.isReposGetting = false;
+
+          // Data checking
           if (response.data.length > 0) {
             this.repos = response.data;
-            this.virtualName = response.data.fullName;
             this.step = 2;
-            document.activeElement.blur();
+            document.activeElement.blur(); // When the page changing the focus statement, not change. We checked the focus statement here.
           } else {
             this.errorType = 'empty-profile';
             this.virtualName = this.usernameSearch;
           }
         }).catch(() => {
+          // Error Handler
           this.isReposGetting = false;
           this.errorType = 'exits';
           this.virtualName = this.usernameSearch;
         })
     },
+
+    /*
+    * value: get a object from dropdown
+    * username: get a string variable from the data() variables (this.usernameSearch)
+    * */
     getRepoStats(value) {
+      // Error Controls, Loading Inticator, and Virtual Name Refreshing
       this.errorType = null;
       this.virtualName = '';
       this.isChartDataRendering = true;
+
+      // Server Request
       axios
         .get(`https://api.github.com/repos/${this.usernameSearch}/${value.name}/contributors`)
         .then(response => {
-          this.isChartDataRendering = false;
+          // Data refreshing
+          this.isChartDataRendering = false; // Loading indicator closing
           this.step = 3;
           this.datacollection = {
             labels: [],
@@ -201,11 +216,13 @@ export default {
               }
             ]
           }
+          // Data updating from the api
           for (let i = 0; i < response.data.length; i++) {
             this.datacollection.labels.push(response.data[i].login.toString());
             this.datacollection.datasets[0].data.push(response.data[i].contributions);
           }
         }).catch(() => {
+          // Error Handling
           this.isChartDataRendering = false;
           this.errorType = 'github-server';
           this.virtualName = this.usernameSearch;

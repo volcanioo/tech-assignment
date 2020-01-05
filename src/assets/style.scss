@@ -26,19 +26,21 @@
 body {
     background: #5c3ebd;
 }
+.icon {
+    display: inline-flex;
+    width: 24px;
+    height: 24px;
+}
+
+// All Template
 * {
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
     outline: none;
     box-sizing: border-box;
 }
-.icon {
-    display: inline-flex;
-    width: 24px;
-    height: 24px;
-}
 h1,
-h2{
+h2 {
     font-size: 46px;
     line-height: 52px;
     font-weight: 700;
