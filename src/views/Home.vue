@@ -24,7 +24,7 @@
         width="25"
         height="25"
         duration="0.2s"
-        :class="{active: isReposGetting}"/>
+        :class="{active: isReposLoading}"/>
     </section>
     <section
       class="repositories--selectbox"
@@ -37,7 +37,7 @@
       </button>
       <multiselect
         label="name"
-        v-model="selectedRepostory"
+        v-model="selectedRepository"
         :options="repos"
         :placeholder="`Select a repository from ${usernameSearch}'s profile`"
         :searchable="true"
@@ -53,15 +53,15 @@
     <section
       class="error"
       v-if="errorType !== null "
-      :class="{'warning': errorType === 'empty-profile', 'warning': errorType === 'no-data'}">
+      :class="{'warning': (errorType === 'empty-profile' || errorType === 'no-data')}">
 
       <h2>Ooops! We have a problem.</h2>
 
       <!-- If profile is empty -->
-      <p v-if="errorType === 'empty-profile' ">{{virtualName}} doesn't share a repository still.</p>
+      <p v-if="errorType === 'empty-profile' ">{{currentName}} doesn't share a repository still.</p>
 
       <!-- If username don't exits -->
-      <p v-if="errorType === 'exits' ">Github doesn't have a user like '{{virtualName}}'</p>
+      <p v-if="errorType === 'exits' ">Github doesn't have a user like '{{currentName}}'</p>
 
       <!-- Chart Error -->
       <p v-if="errorType === 'github-server' ">We can't get dataset from github Server. Can you try again later?</p>
@@ -78,7 +78,7 @@
       :class="{'active': step !== 1, 'fill': step === 2}"
       v-if="errorType === null">
       <Chart
-        :chartData="datacollection"
+        :chartData="dataCollection"
         :options="chartOptions" />
       <article class="repositories--chart--placeholder" v-if="step !== 3">
         <h2>User found.</h2>
@@ -92,7 +92,7 @@
 import Multiselect from "vue-multiselect";
 import Chart from "@/components/Chart.vue";
 import Loading from '@/components/Loading.vue';
-import axios from "axios";
+import Service from '@/core/service/github.js';
 
 export default {
   name: 'home',
@@ -106,10 +106,10 @@ export default {
 
       // Error Check
       errorType: null,
-      virtualName: '',
+      currentName: '',
 
       // Loading
-      isReposGetting: false,
+      isReposLoading: false,
       isChartDataRendering: false,
 
       // Step Management For Animations
@@ -118,10 +118,10 @@ export default {
       // Repositories Area
       usernameSearch: '',
       repos: [],
-      selectedRepostory: null,
+      selectedRepository: null,
 
       // Chart Area
-      datacollection: null,
+      dataCollection: null,
       chartOptions: {
         responsive: true,
         maintainAspectRatio: false,
@@ -150,15 +150,23 @@ export default {
     }
   },
   methods: {
-    // Step reset generally works on back buttons and doesn't want a variable for that.
+    /**
+     * Step reset generally works on back buttons and doesn't want a variable for that.
+     * @param.internal step
+     * @param.internal errorType
+     * @param.internal repos (Array)
+     * @param.internal usernameSearch (String)
+     * @param.internal selectedRepository
+     * @param.internal dataCollection (Object)
+     */
     stepReset() {
       this.step = 1;
       this.errorType = null;
       this.repos = [];
       this.usernameSearch = '';
-      this.selectedRepostory = null;
+      this.selectedRepository = null;
       this.$refs.usernameSearch.focus();
-      this.datacollection = {
+      this.dataCollection = {
         labels: [],
         datasets: [
           {
@@ -170,9 +178,10 @@ export default {
       };
     },
 
-    /*
-    * username: get a string variable from the data() variables (this.usernameSearch)
-    * */
+    /**
+     * Getting all repositories by a selected value
+     * @param.internal usernameSearch - Getting from the data() variables
+     */
     getRepos() {
       // Check to Username by the user
       if (this.usernameSearch === null || this.usernameSearch === "") {
@@ -182,15 +191,14 @@ export default {
 
       // Error Controls and Virtual Name Refreshing
       this.errorType = null;
-      this.virtualName = null;
-      this.isReposGetting = true;
+      this.currentName = null;
+      this.isReposLoading = true;
 
       // Server Request
-      axios
-        .get(`https://api.github.com/users/${this.usernameSearch}/repos`)
+      Service.getRepos(this.usernameSearch)
         .then(response => {
           // Loading indicator closing
-          this.isReposGetting = false;
+          this.isReposLoading = false;
 
           // Data checking
           if (response.data.length > 0) {
@@ -199,20 +207,21 @@ export default {
             document.activeElement.blur(); // When the page changing the focus statement, not change. We checked the focus statement here.
           } else {
             this.errorType = 'empty-profile';
-            this.virtualName = this.usernameSearch;
+            this.currentName = this.usernameSearch;
           }
         }).catch(() => {
         // Error Handler
-        this.isReposGetting = false;
+        this.isReposLoading = false;
         this.errorType = 'exits';
-        this.virtualName = this.usernameSearch;
+        this.currentName = this.usernameSearch;
       })
     },
 
-    /*
-    * value: get a object from dropdown
-    * username: get a string variable from the data() variables (this.usernameSearch)
-    * */
+    /**
+     * Getting all contributors count by a selected value
+     * @param value (String) - Getting from dropdown
+     * @param.internal usernameSearch - Getting from the data() variables
+     */
     getRepoStats(value) {
       // Check to Value of Selected Element
       if (!value || value.name === null || value.name === "") {
@@ -222,17 +231,16 @@ export default {
 
       // Error Controls, Loading Inticator, and Virtual Name Refreshing
       this.errorType = null;
-      this.virtualName = '';
+      this.currentName = '';
       this.isChartDataRendering = true;
 
       // Server Request
-      axios
-        .get(`https://api.github.com/repos/${this.usernameSearch}/${value.name}/contributors`)
+      Service.getRepoStats(this.usernameSearch, value.name)
         .then(response => {
           // Data refreshing
           this.isChartDataRendering = false; // Loading indicator closing
           this.step = 3;
-          this.datacollection = {
+          this.dataCollection = {
             labels: [],
             datasets: [
               {
@@ -246,17 +254,17 @@ export default {
           if (response.data.length === 0) {
             this.isChartDataRendering = false;
             this.errorType = 'no-data';
-            this.virtualName = this.usernameSearch;
+            this.currentName = this.usernameSearch;
           }
           for (let i = 0; i < response.data.length; i++) {
-            this.datacollection.labels.push(response.data[i].login.toString());
-            this.datacollection.datasets[0].data.push(response.data[i].contributions);
+            this.dataCollection.labels.push(response.data[i].login.toString());
+            this.dataCollection.datasets[0].data.push(response.data[i].contributions);
           }
         }).catch(() => {
           // Error Handling
           this.isChartDataRendering = false;
           this.errorType = 'github-server';
-          this.virtualName = this.usernameSearch;
+          this.currentName = this.usernameSearch;
         })
     },
   },
