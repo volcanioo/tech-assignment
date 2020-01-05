@@ -1,5 +1,5 @@
 # tech-assignment
-If you want to learn How I do it? You can click [here.](#development-process)
+If you want to learn How I did it? You can click [here.](#development-process)
 
 ## Project setup
 ```
@@ -31,7 +31,7 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 # Development Process
 
-Hey, I'll explain how I do it in here.
+Hey, I'll explain how I did  it in here.
 
 ## Interface Planning Process
 Actually, I felt uncomfortable while creating this app. Because I had 2 elements for the design of the app. I was should create a strong user experience. But whatever I do, I couldn't fill all screen on desktop. I fixed this problem by using big sizes on fonts.
