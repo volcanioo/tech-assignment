@@ -222,6 +222,7 @@ p {
             opacity: .7;
             white-space: nowrap;
             cursor: pointer;
+            line-height: 32px;
             @include breakpoint(md) {
                 font-size: 12px;
             }
@@ -316,7 +317,7 @@ p {
             opacity: 1;
             pointer-events: auto;
             max-height: 1000px;
-            overflow: initial;
+            overflow: visible;
         }
     }
 }
