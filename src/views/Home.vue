@@ -52,7 +52,7 @@
     </section>
 
 
-    <section class="error" v-if=" errorType !== null " :class="{'warning': errorType === 'empty-profile'}">
+    <section class="error" v-if="errorType !== null " :class="{'warning': errorType === 'empty-profile'}">
 
       <h2>Ooops! We have a problem.</h2>
 
