@@ -101,7 +101,6 @@ export default {
     Chart,
     Loading
   },
-
   data() {
     return {
 
