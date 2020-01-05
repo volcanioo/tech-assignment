@@ -1,11 +1,12 @@
 <script>
 import { Bar, mixins } from "vue-chartjs";
-const { reactiveProp } = mixins
+const { reactiveProp } = mixins // Its helping to update to charts every data change
 
 export default {
     extends: Bar,
     mixins: [reactiveProp],
     props: {
+        // Creating props
         chartData: {
             type: Object,
             default: null
@@ -15,18 +16,12 @@ export default {
             default: null
         }
     },
-    data() {
-        return {
-            gradient: null,
-            gradient2: null
-        };
-    },
     mounted() {
-        this.renderChart(this.chartData, this.options)
+        this.renderChart(this.chartData, this.options)  // It's helping to render of the first load.
     },
     watch: {
         chartData () {
-            this.$data._chart.update()
+            this.$data._chart.update()  // Its helping to update to charts every data change
         }
     }
 };
